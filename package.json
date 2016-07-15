@@ -1,0 +1,35 @@
+{
+  "name": "drocker",
+  "version": "1.0.0",
+  "description": "The developer toolset for creating and managing Drocker containers.",
+  "main": "index.js",
+  "scripts": {
+    "status": "docker ps -af name=drocker-$(basename $(pwd))",
+    "up": "docker run --name drocker-$(basename $(pwd)) -h $(basename $(pwd)) -dp 80:80 -p 22:22 -v $(pwd)/htdocs:/usr/share/nginx/htdocs d7.50",
+    "start": "docker start drocker-$(basename $(pwd))",
+    "stop": "docker stop drocker-$(basename $(pwd))",
+    "dump": "docker exec -it drocker-$(basename $(pwd)) /bin/bash -c \"cd /usr/share/nginx/htdocs; drush sql-dump > db_$(date +%Y%m%d%H%M%S).sql\"",
+    "destroy": "docker rm -f drocker-$(basename $(pwd))",
+    "ssh": "docker exec -it drocker-$(basename $(pwd)) /bin/bash -c \"export TERM=xterm; tput reset; cd /usr/share/nginx/htdocs/; exec \"${SHELL:-sh}\"\"",
+    "zsh:install": "docker exec -i drocker-$(basename $(pwd)) /bin/bash -c \"sudo apt-get install zsh -y;git clone https://github.com/powerline/fonts ~/fonts; bash ~/fonts/install.sh; export TERM=xterm;curl https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/zsh-install.sh; sudo locale-gen en_US.UTF-8; nohup bash /root/zsh-install.sh &\"; docker exec -i drocker-$(basename $(pwd)) /bin/bash -c \"echo \"DEFAULT_USER=root\" >> /root/.zshrc\"; docker exec -i drocker-$(basename $(pwd)) sed -i \"s|robbyrussell|agnoster|g\" /root/.zshrc;",
+    "zsh": "docker exec -it drocker-drocker /bin/bash -c \"export TERM=xterm; tput reset; cd /usr/share/nginx/htdocs/; exec /usr/bin/zsh\"",
+    "xdebug": "dockerhost=$(cat /Users/$(whoami)/Library/Containers/com.docker.docker/Data/database/com.docker.driver.amd64-linux/slirp/host);docker exec -i drocker-$(basename $(pwd)) sed -i \"s|172.17.0.1|${dockerhost}|g\" /etc/php5/mods-available/xdebug.ini; docker exec -i drocker-$(basename $(pwd)) service php5-fpm restart",
+    "drupal-status": "docker exec -it drocker-$(basename $(pwd)) /bin/bash -c \"cd /usr/share/nginx/htdocs; drush status\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iampuma/drocker.git"
+  },
+  "keywords": [
+    "drocker",
+    "drupal",
+    "docker"
+  ],
+  "author": "nicky.vandevoorde@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iampuma/drocker/issues"
+  },
+  "homepage": "https://github.com/iampuma/drocker#readme"
+}
